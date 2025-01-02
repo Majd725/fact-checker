@@ -2,6 +2,8 @@ import pyaudio
 import threading
 import wave
 from chatgpt_processing import fact_checking
+from whisper_processing import audio_processing
+
 #Transcription Storage
 transcripts = []
 
@@ -76,12 +78,14 @@ def process_audio():
             file_namer = 1 #Counter for file name
             save_to_file(f'audio_{file_namer}',segment)
             file_namer+=1
-            processing_thread = threading.Thread(target=process_audio(), args=f'audio_{file_namer-1}')
+            processing_thread = threading.Thread(target=audio_processing, args=f'audio_{file_namer-1}')
             processing_thread.start()
         if (len(transcripts)!=0):
 
             gptoutput = fact_checking()
             #Check if the 20 sec had anything incorrect
+
+            #This doesn't work because the reply is more than just a .
             if gptoutput!='.':
                 print("MISTAKE")
                 print(gptoutput)

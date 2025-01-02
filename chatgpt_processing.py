@@ -13,7 +13,7 @@ client = OpenAI(api_key = api_key)
 
 def fact_checking():
     completion = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
             {"role": "developer", "content":
                 """This is a conversation between two people. You are going to fact check it. 
