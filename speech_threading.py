@@ -2,6 +2,9 @@ import pyaudio
 import threading
 import wave
 
+#Transcription Storage
+transcripts = []
+
 
 # Constants for audio recording
 RATE = 16000  # Sampling rate
@@ -73,14 +76,13 @@ def process_audio():
             file_namer = 1 #Counter for file name
             save_to_file(f'audio_{file_namer}',segment)
             file_namer+=1
-
-
+            processing_thread = threading.Thread(target=process_audio(), args=f'audio_{file_namer-1}')
+            processing_thread.start()
 
 if __name__ == "__main__":
     # Start the recording thread
     recording_thread = threading.Thread(target=record_audio)
     recording_thread.start()
-    processing_thread = threading.thread
     # Start processing audio in the main thread
     try:
         process_audio()
