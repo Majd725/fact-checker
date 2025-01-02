@@ -23,6 +23,7 @@ def audio_processing(audio_name):
     if os.path.exists(audio_path):
         os.remove(audio_path)
 
-    transcripts
+    #Adds the transcript for processing
+    transcripts.append(transcription)
 
 

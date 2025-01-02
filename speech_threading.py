@@ -1,7 +1,7 @@
 import pyaudio
 import threading
 import wave
-
+from chatgpt_processing import fact_checking
 #Transcription Storage
 transcripts = []
 
@@ -78,6 +78,14 @@ def process_audio():
             file_namer+=1
             processing_thread = threading.Thread(target=process_audio(), args=f'audio_{file_namer-1}')
             processing_thread.start()
+        if (len(transcripts)!=0):
+
+            gptoutput = fact_checking()
+            #Check if the 20 sec had anything incorrect
+            if gptoutput!='.':
+                print("MISTAKE")
+                print(gptoutput)
+
 
 if __name__ == "__main__":
     # Start the recording thread
