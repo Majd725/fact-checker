@@ -1,5 +1,7 @@
 import pyaudio
 import threading
+import wave
+
 
 # Constants for audio recording
 RATE = 16000  # Sampling rate
@@ -14,7 +16,6 @@ lock = threading.Lock()
 
 def record_audio():
     audio_interface = pyaudio.PyAudio()
-
     audio_stream = audio_interface.open(
         format=pyaudio.paInt16,  # 16-bit format
         channels=1,             # Mono audio
@@ -41,6 +42,17 @@ def record_audio():
         audio_stream.close()
         audio_interface.terminate()
 
+
+#Save the audio to file to send to Whisper API
+def save_to_file(file_name, seg):
+    audio_interface = pyaudio.PyAudio()
+    with wave.open(file_name, "wb") as wf:
+        wf.setnchannels(1)  # Mono
+        wf.setsampwidth(audio_interface.get_sample_size(pyaudio.paInt16))  # 16-bit samples
+        wf.setframerate(RATE)  # Sampling rate
+        wf.writeframes(b"".join(seg))  # Combine chunks and write
+
+
 def process_audio():
     """Process the audio data in 20-second segments."""
     print("Processing started...")
@@ -58,15 +70,17 @@ def process_audio():
             segment = buffer[:CHUNKS_PER_20_SECONDS]
             buffer = buffer[CHUNKS_PER_20_SECONDS:]  # Remove processed data
 
-            # Process the 20-second segment
-            print(f"Processing 20 seconds of audio with {len(segment)} chunks.")
-            # Example: Here, you can send `segment` for further processing
+            file_namer = 1 #Counter for file name
+            save_to_file(f'audio_{file_namer}',segment)
+            file_namer+=1
+
+
 
 if __name__ == "__main__":
     # Start the recording thread
     recording_thread = threading.Thread(target=record_audio)
     recording_thread.start()
-
+    processing_thread = threading.thread
     # Start processing audio in the main thread
     try:
         process_audio()
